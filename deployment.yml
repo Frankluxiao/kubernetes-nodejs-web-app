@@ -1,0 +1,42 @@
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: my-app-service
+  labels:
+    app: my-app-service
+spec:
+  selector:
+    app: myapp
+  ports:
+    - protocol: "TCP"
+      # Port accessible inside cluster
+      port: 8081
+      # Port to forward to inside the pod
+      targetPort: 8080
+      # Port accessible outside cluster
+      nodePort: 30002
+  type: LoadBalancer
+
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-app-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: myapp
+  template:
+    metadata:
+      labels:
+        app: myapp
+    spec:
+      containers:
+        - name: myapp
+          image: frankluxiao/exampleapp:latest
+          ports:
+            - containerPort: 8080
+
